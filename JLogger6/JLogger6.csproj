@@ -1,0 +1,104 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+            <TargetFramework>net6.0</TargetFramework> 
+		<RootNamespace>Jeff.Jones.JLogger</RootNamespace>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		<SignAssembly>False</SignAssembly>
+		<AssemblyOriginatorKeyFile>JeffJonesDigiCert.pfx</AssemblyOriginatorKeyFile>
+		<PackageLicenseFile>License.txt</PackageLicenseFile>
+		<Authors>Jeff Jones</Authors>
+		<Company>Jeff Jones</Company>
+		<PackageId>Jeff.Jones.JLogger6</PackageId>
+		<Title>JLogger - Logging singleton with email option</Title>
+		<Description>A singleton logging component.  Simple to use, lots of flexibility.  Writes to a user-specified log and path, and optionally sends email.  Can also write logs to a SQL Server database.</Description>
+		<PackageReleaseNotes>All requests for support must be sent by email to:
+    MSBassSinger@comcast.net
+The email MUST havd "JLogger6" in the Subject line
+You MUST provide details that include code snippets of where the failure occured, and exact failure or exception messages.
+		</PackageReleaseNotes>
+		<PackageTags>log logging logger .NET singleton throughput multithreaded</PackageTags>
+		<Copyright>Copyright © 2022 Jeff Jones.  All rights Reserved.</Copyright>
+		<ApplicationIcon>circlej.ico</ApplicationIcon>
+		<Win32Resource />
+		<AssemblyVersion>6.0.0</AssemblyVersion>
+		<FileVersion>6.0.0</FileVersion>
+		<Version>6.0.0</Version>
+		<PackageProjectUrl>https://www.codeproject.com/Articles/5163318/JLogger-When-You-Care-to-Write-the-Very-Best</PackageProjectUrl>
+		<PackageIcon>circlej.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<BaseOutputPath>bin\</BaseOutputPath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<DocumentationFile>C:\Projects\JLogger6\JLogger6\JLogger6.xml</DocumentationFile>
+		<RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<DebugType>embedded</DebugType>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <DebugType>embedded</DebugType>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Remove="ILogger.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="SignNuGetPackage.bat" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="License.txt">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+		<None Include="README.md">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Azure.Storage.Common" Version="12.12.0" />
+		<PackageReference Include="Azure.Storage.Files.Shares" Version="12.11.0" />
+		<PackageReference Include="Jeff.Jones.JHelpers6" Version="6.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.0" />
+		<PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Update="Properties\Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Update="Properties\Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="circlej.png">
+		  <Pack>True</Pack>
+		  <PackagePath>\</PackagePath>
+		</None>
+		<None Update="DB\DBLog.sql">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="DB\spDebugLogDelete.sql">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="DB\spDebugLogInsert.sql">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="README.md">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+</Project>
