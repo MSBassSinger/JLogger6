@@ -21,7 +21,7 @@ namespace JLogger6Test
 
 			LOG_TYPE logOptions = m_DebugLogOptions | LOG_TYPE.SendEmail;
 
-			response = Logger.Instance.SetDBConfiguration("JJONES-DEV",
+			response = Logger.Instance.SetDBConfiguration("<COMPUTER_NAME>",
 														  "Logger",
 														  "Logger4Me",
 														  false,
@@ -39,13 +39,13 @@ namespace JLogger6Test
 			sendToAddresses.Add("MSBassSinger@comcast.net");
 			//sendToAddresses.Add("PamJones4@comcast.net");
 
-			response = Logger.Instance.SetEmailData("smtp.comcast.net",
-											"msbasssinger@comcast.net",
-											"Co11iezTheBest",
+			response = Logger.Instance.SetEmailData("smtp.host.net",
+											"user@host.net",
+											"Pa$$w0rd",
 											587,
 											sendToAddresses,
-											"MSBassSinger@comcast.net",
-											"MSBassSinger@comcast.net",
+											"user@host.net",
+											"user@host.net",
 											true);
 
 
