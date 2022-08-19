@@ -4,8 +4,8 @@ JLogger
 Overview
 --------
 
-JLogger is a singleton component as a .NET Standard 2.0 library component that
-can be used with any .NET project, whether Core or Standard, on any supported OS.
+JLogger is a singleton component as a .NET 6 library component that
+can be used with any .NET project that supports .NET 6.
 
 JLogger has these characteristics:
 
@@ -34,9 +34,14 @@ JLogger has these characteristics:
 
 -   Log Retention – logs are automatically removed after the specified number of
     days, unless zero is specified, in which case no log files are deleted.
+	Retnention also applies to log files stored in Azure.
 
 -   Tab-delimited Log File – the log is written as a tab-delimited file. This
     enables opening up the file in programs like Excel for analysis.
+	
+-   Azure - can optionally store the log files in Azure.  The log file is created
+	locally as a temporary file (better performance for local writes) then when the 
+	log closes, it is copied to the specified Azure file storage and deleted locally.
 
 LOG_TYPE Enum
 -------------
@@ -225,6 +230,13 @@ sendToAddresses,
 
 >   useSSL);
 
+// Optional configuration for Azure file storage
+String resourceID = "<AZURE_CONNECTION_STRING>";
+String fileShareName = "<AZURE_FILE_SHARE_NAME>";
+String directoryName = "<AZURE_DIRECTORY_NAME>";
+response = Logger.Instance.SetAzureConfiguration(resourceID, fileShareName, directoryName, true);
+
+
 // End of email setup.
 
 // This starts the log operation AFTER you have set the initial parameters.
@@ -412,6 +424,11 @@ Int32 daysToRetainLogs,
 LOG_TYPE debugLogOptions,  
 String emergencyLogPrefixName = DEFAULT_EMERG_LOG_PREFIX) –  
 Configures the Logger for logging before starting the log.
+
+Boolean SetAzureConfiguration(String azureStorageResourceID,
+String azureStorageFileShareName,
+String azureStorageDirectory,
+Boolean useAzureFileStorage)
 
 SMTPPort – (Get/Set) - The port that the SMTP email server listens on.
 
