@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
             <TargetFramework>net6.0</TargetFramework> 
-		<RootNamespace>Jeff.Jones.JLogger</RootNamespace>
+		<RootNamespace>Jeff.Jones.JLogger6</RootNamespace>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 		<SignAssembly>False</SignAssembly>
@@ -10,8 +10,8 @@
 		<Authors>Jeff Jones</Authors>
 		<Company>Jeff Jones</Company>
 		<PackageId>Jeff.Jones.JLogger6</PackageId>
-		<Title>JLogger - Logging singleton with email option</Title>
-		<Description>A singleton logging component.  Simple to use, lots of flexibility.  Writes to a user-specified log and path, and optionally sends email.  Can also write logs to a SQL Server database.</Description>
+		<Title>JLogger6 - Logging singleton with email, database, and Azure options</Title>
+		<Description>A singleton logging component.  Simple to use, lots of flexibility.  Writes to a user-specified log and path, and optionally sends email.  Can also write logs to a SQL Server database.  Allows storing log files in Azure File Storage.</Description>
 		<PackageReleaseNotes>All requests for support must be sent by email to:
     MSBassSinger@comcast.net
 The email MUST havd "JLogger6" in the Subject line
@@ -24,10 +24,12 @@ You MUST provide details that include code snippets of where the failure occured
 		<AssemblyVersion>6.0.0</AssemblyVersion>
 		<FileVersion>6.0.0</FileVersion>
 		<Version>6.0.0</Version>
-		<PackageProjectUrl>https://www.codeproject.com/Articles/5163318/JLogger-When-You-Care-to-Write-the-Very-Best</PackageProjectUrl>
+		<PackageProjectUrl>https://github.com/MSBassSinger/JLogger6</PackageProjectUrl>
 		<PackageIcon>circlej.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<BaseOutputPath>bin\</BaseOutputPath>
+		<RepositoryUrl>https://github.com/MSBassSinger/JLogger6</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DocumentationFile>C:\Projects\JLogger6\JLogger6\JLogger6.xml</DocumentationFile>
@@ -49,7 +51,7 @@ You MUST provide details that include code snippets of where the failure occured
 	<ItemGroup>
 		<None Include="License.txt">
 			<Pack>True</Pack>
-			<PackagePath></PackagePath>
+			<PackagePath>\</PackagePath>
 		</None>
 		<None Include="README.md">
 			<Pack>True</Pack>
