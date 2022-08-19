@@ -12,6 +12,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using Microsoft.Extensions.Logging;
 using Azure.Storage.Files.Shares.Models;
+using System.Xml.Linq;
 
 namespace Jeff.Jones.JLogger6
 {
@@ -904,6 +905,46 @@ namespace Jeff.Jones.JLogger6
 
 			return retVal;
 
+		}
+
+		/// <summary>
+		/// This sets the configuration if using Azure File Storage for the log file.
+		/// Note that for performance reasons, the active log file is kept locally
+		/// (see SetLogData method) and when closed, copied to the Azure file storage share.
+		/// The file name construction is based on the SetLogData method parameters.
+		/// </summary>
+		/// <param name="azureStorageResourceID">The connection string from the storage directory Access Keys</param>
+		/// <param name="azureStorageFileShareName">The URL provided on the fileshare properties page</param>
+		/// <param name="azureStorageDirectory">The storage directory name</param>
+		/// <param name="useAzureFileStorage">True to turn on the use of the Azure file storage matching the configuration.</param>
+		/// <returns></returns>
+		public Boolean SetAzureConfiguration(String azureStorageResourceID,
+											 String azureStorageFileShareName,
+											 String azureStorageDirectory,
+											 Boolean useAzureFileStorage)
+		{
+
+			Boolean retVal = false;
+
+			try
+			{
+				this.AzureStorageResourceID = azureStorageResourceID;
+				this.AzureStorageFileShareName = azureStorageFileShareName;
+				this.AzureStorageDirectory = azureStorageDirectory;	
+				this.UseAzureFileStorage = useAzureFileStorage;
+
+				retVal = true;
+			}
+			catch (Exception exUnhandled)
+			{
+				exUnhandled.Data.Add("azureStorageResourceID", azureStorageResourceID ?? "NULL");
+				exUnhandled.Data.Add("azureStorageFileShareName", azureStorageFileShareName ?? "NULL");
+				exUnhandled.Data.Add("azureStorageDirectory", azureStorageDirectory ?? "NULL");
+				exUnhandled.Data.Add("useAzureFileStorage", useAzureFileStorage.ToString());
+				throw;
+			}
+
+			return retVal;
 
 		}
 
@@ -1379,7 +1420,7 @@ namespace Jeff.Jones.JLogger6
 				// change the debug file name for closing
 				String strDebugFileName = m_strDebugLogFileName.Replace("9999-99-99_99.99.99.999", strEndDate);
 
-				// This copies over the current file from the temporary to the permanent name.
+				// This copies over the current local file from the temporary to the permanent name.
 				File.Move(m_strDebugLogFileName, strDebugFileName);
 
 				// If using Azure storage, the file needs to be copied there, and deleted locally.
@@ -1393,7 +1434,7 @@ namespace Jeff.Jones.JLogger6
 													m_AzureStorageFileShareName,
 													m_AzureStorageDirectory,
 													m_AzureRemoteFileName,
-													m_strDebugLogFileName);
+													strDebugFileName);
 
 					// Make sure the Azure storage exists
 					if (!azClient.DoesAzureStorageExist())
@@ -1404,7 +1445,7 @@ namespace Jeff.Jones.JLogger6
 					// Copy the local log file to Azure
 					azClient.CopyLogFileToRemote();
 
-					// Delete the temporary log file if it exists.
+					// Delete the temporary log file in Azure if it exists.
 					azClient.DeleteAzureLogFile(oldAzureFileName);
 
 					// Last step - delete the local log file now that it is in Azure storage.
@@ -2209,7 +2250,14 @@ namespace Jeff.Jones.JLogger6
 
 					strDebugFileName = m_LogFileNamePrefix + "_" + strFileStartDate + LOG_FILE_TEMP_SUFFIX;
 
-					m_strDebugLogFileName = m_LogPath + @"\" + strDebugFileName;
+					if (m_LogPath.EndsWith(@"\"))
+					{
+						m_strDebugLogFileName = m_LogPath + strDebugFileName;
+					}
+					else
+					{
+						m_strDebugLogFileName = m_LogPath + @"\" + strDebugFileName;
+					}
 
 					if (!File.Exists(m_strDebugLogFileName))
 					{

@@ -570,6 +570,19 @@
             <param name="debugLogOptions"></param>
             <returns></returns>
         </member>
+        <member name="M:Jeff.Jones.JLogger6.Logger.SetAzureConfiguration(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            This sets the configuration if using Azure File Storage for the log file.
+            Note that for performance reasons, the active log file is kept locally
+            (see SetLogData method) and when closed, copied to the Azure file storage share.
+            The file name construction is based on the SetLogData method parameters.
+            </summary>
+            <param name="azureStorageResourceID">The connection string from the storage directory Access Keys</param>
+            <param name="azureStorageFileShareName">The URL provided on the fileshare properties page</param>
+            <param name="azureStorageDirectory">The storage directory name</param>
+            <param name="useAzureFileStorage">True to turn on the use of the Azure file storage matching the configuration.</param>
+            <returns></returns>
+        </member>
         <member name="M:Jeff.Jones.JLogger6.Logger.SetLogData(System.String,System.String,System.Int32,Jeff.Jones.JLogger6.LOG_TYPE,System.String)">
             <summary>
             Method used to configure the Logger instance before starting the log..

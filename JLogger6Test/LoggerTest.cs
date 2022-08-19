@@ -1,6 +1,6 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jeff.Jones.JLogger6;
-using Jeff.Jones.JHelpers;
+using Jeff.Jones.JHelpers6;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -35,7 +35,7 @@ namespace JLogger6Test
 											587,
 											sendToAddresses,
 											"MSBassSinger@comcast.net",
-											"MSBassSinger@comcast.net", 
+											"MSBassSinger@comcast.net",
 											true);
 
 
@@ -128,5 +128,6 @@ namespace JLogger6Test
 			}
 
 		}
+
 	}
 }

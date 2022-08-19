@@ -14,15 +14,19 @@ namespace Jeff.Jones.JLogger6
 	{
 
 
-		private String m_ResourceID = "DefaultEndpointsProtocol=https;AccountName=jdjlogfiles;AccountKey=rHX4ESKI7exVm9BayRNJt2rgYx+U1dU+PkZ5FfooUScVtCjplDzP7KbWZVEYAJooh6rpuxQYFH8T+AStngyCXQ==;EndpointSuffix=core.windows.net";
-		private String m_FileShareName = "https://jdjlogfiles.file.core.windows.net/jdjlogfileshare";
-		private String m_DirectoryName = "jdjlogfiledirectory";
+		private String m_ResourceID = "";
+		private String m_FileShareName = "";
+		private String m_DirectoryName = "";
 		private String m_LocalFileName = "";
 		private String m_RemoteFileName = "";
 
 
 
-		public AzureFileClient(String resourceID, String fileShareName, String directoryName, String remoteFileName, String localFileName)
+		public AzureFileClient(String resourceID, 
+		                       String fileShareName, 
+							   String directoryName, 
+							   String remoteFileName, 
+							   String localFileName)
 		{
 			m_ResourceID = resourceID;
 
