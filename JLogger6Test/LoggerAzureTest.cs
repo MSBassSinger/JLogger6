@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Jeff.Jones.JLogger6;
 using Jeff.Jones.JHelpers6;
 using System;
@@ -7,11 +7,9 @@ using System.Threading.Tasks;
 
 namespace JLogger6Test
 {
-
 	[TestClass]
-	public class LoggerDBTest
+	public class LoggerAzureTest
 	{
-
 		private LOG_TYPE m_DebugLogOptions = Logger.DEFAULT_DEBUG_LOG_OPTIONS;
 
 		[TestInitialize]
@@ -19,41 +17,27 @@ namespace JLogger6Test
 		{
 			Boolean response = false;
 
+			String resourceID = "<AZURE_CONNECTION_STRING>";
+			String fileShareName = "<AZURE_FILE_SHARE_NAME>";
+			String directoryName = "<AZURE_DIRECTORY_NAME>";
+
+			String filePath = CommonHelpers.CurDir + @"\";
+
 			LOG_TYPE logOptions = m_DebugLogOptions | LOG_TYPE.SendEmail;
 
-			response = Logger.Instance.SetDBConfiguration("JJONES-DEV",
-														  "Logger",
-														  "Logger4Me",
-														  false,
-														  true,
-														  "Test", 
-														  1,
-														  logOptions);
+			response = Logger.Instance.SetLogData(filePath, "JTest", 1, logOptions, "");
 
 			Assert.IsTrue(response, "Failed to set Logger Data");
 
-			Logger.Instance.DebugLogOptions = logOptions;
+			response = Logger.Instance.SetAzureConfiguration(resourceID, fileShareName, directoryName, true);
 
-			List<String> sendToAddresses = new List<String>();
-
-			sendToAddresses.Add("MSBassSinger@comcast.net");
-			//sendToAddresses.Add("PamJones4@comcast.net");
-
-			response = Logger.Instance.SetEmailData("smtp.comcast.net",
-											"msbasssinger@comcast.net",
-											"Co11iezTheBest",
-											587,
-											sendToAddresses,
-											"MSBassSinger@comcast.net",
-											"MSBassSinger@comcast.net",
-											true);
-
-
-			Assert.IsTrue(response, "Failed to set SendMail Data");
+			Assert.IsTrue(response, "Failed to set Azure Logger Data");
 
 			response = Logger.Instance.StartLog();
 
 			Assert.IsTrue(response, "Failed to start the log");
+
+			Logger.Instance.WriteDebugLog(LOG_TYPE.Informational, "Log setup", "Azure = True");
 
 
 		}
@@ -81,7 +65,7 @@ namespace JLogger6Test
 
 				if ((m_DebugLogOptions & LOG_TYPE.Error) == LOG_TYPE.Error)
 				{
-					Logger.Instance.WriteDebugLog(LOG_TYPE.Error | LOG_TYPE.SendEmail, exUnhandled, "This is detail message with email.");
+					Logger.Instance.WriteDebugLog(LOG_TYPE.Error | LOG_TYPE.SendEmail, exUnhandled, "This is detail message.");
 
 					try
 					{
@@ -122,7 +106,11 @@ namespace JLogger6Test
 									}
 								});
 
-						Logger.Instance.WriteDebugLog(LOG_TYPE.Error, exUnhandled, "This is detail message without sending email.");
+						System.Threading.Thread.Sleep(2000);
+
+						Logger.Instance.Dispose();
+
+						System.Threading.Thread.Sleep(2000);
 
 					}
 					catch (Exception exLog)
@@ -133,21 +121,7 @@ namespace JLogger6Test
 
 			}
 
-		}  // END public void WriteLogExceptionTest()
-
-
-		[TestCleanup]
-		public void TestShutdown()
-		{
-			System.Threading.Thread.Sleep(2000);
-
-			Logger.Instance.Dispose();
-
-			System.Threading.Thread.Sleep(2000);
-
-			Logger.Instance.StopLog();
 		}
 
-	}  // END public class LoggerDBTest
-
-}  // END namespace JLogger6Test
+	}
+}
