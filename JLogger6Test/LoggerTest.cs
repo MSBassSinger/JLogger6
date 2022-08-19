@@ -29,13 +29,13 @@ namespace JLogger6Test
 			sendToAddresses.Add("MSBassSinger@comcast.net");
 			sendToAddresses.Add("PamJones4@comcast.net");
 
-			response = Logger.Instance.SetEmailData("smtp.comcast.net",
-											"msbasssinger@comcast.net",
-											"Co11iez#1",
+			response = Logger.Instance.SetEmailData("smtp.host.net",
+											"user@host.net",
+											"Pa$$w0rd",
 											587,
 											sendToAddresses,
-											"MSBassSinger@comcast.net",
-											"MSBassSinger@comcast.net",
+											"user@host.net",
+											"user@host.net",
 											true);
 
 
