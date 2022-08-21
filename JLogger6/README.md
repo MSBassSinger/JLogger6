@@ -174,10 +174,6 @@ Int32 daysToRetainLogs = 30;
 
 // Logger.Instance.DebugLogOptions property.
 
-// You only need to use this method if you are using debug log
-
-// files.  It will be ignored if using database (DBLog) log entries.
-
 response = Logger.Instance.SetLogData(filePath, fileNamePrefix,
 daysToRetainLogs, logOptions, "");
 
@@ -230,6 +226,8 @@ sendToAddresses,
 
 >   useSSL);
 
+// End of email setup.
+
 // Optional configuration for Azure file storage
 String resourceID = "<AZURE_CONNECTION_STRING>";
 String fileShareName = "<AZURE_FILE_SHARE_NAME>";
@@ -237,7 +235,6 @@ String directoryName = "<AZURE_DIRECTORY_NAME>";
 response = Logger.Instance.SetAzureConfiguration(resourceID, fileShareName, directoryName, true);
 
 
-// End of email setup.
 
 // This starts the log operation AFTER you have set the initial parameters.
 
