@@ -390,7 +390,7 @@ namespace Jeff.Jones.JLogger6
 				};
 				sqlParams.Add(paramErrMessage);
 
-				//@ErrMessage NVARCHAR(255) = '' OUTPUT   )
+				//@RetVal int
 				SqlParameter paramReturnValue = new SqlParameter("RetVal", SqlDbType.Int)
 				{
 					Direction = ParameterDirection.ReturnValue
