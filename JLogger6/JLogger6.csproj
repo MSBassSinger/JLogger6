@@ -16,14 +16,14 @@
     MSBassSinger@comcast.net
 The email MUST havd "JLogger6" in the Subject line
 You MUST provide details that include code snippets of where the failure occured, and exact failure or exception messages.
-		</PackageReleaseNotes>
+Demo code can be found at https://github.com/MSBassSinger/LoggingDemo6</PackageReleaseNotes>
 		<PackageTags>log logging logger .NET singleton throughput multithreaded</PackageTags>
 		<Copyright>Copyright © 2022 Jeff Jones.  All rights Reserved.</Copyright>
 		<ApplicationIcon>circlej.ico</ApplicationIcon>
 		<Win32Resource />
-		<AssemblyVersion>6.0.1</AssemblyVersion>
-		<FileVersion>6.0.1</FileVersion>
-		<Version>6.0.1</Version>
+		<AssemblyVersion>6.0.2</AssemblyVersion>
+		<FileVersion>6.0.2</FileVersion>
+		<Version>6.0.2</Version>
 		<PackageProjectUrl>https://github.com/MSBassSinger/JLogger6</PackageProjectUrl>
 		<PackageIcon>circlej.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>

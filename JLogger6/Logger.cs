@@ -1662,10 +1662,14 @@ namespace Jeff.Jones.JLogger6
 		{
 			Boolean retVal = false;
 
+			LOG_TYPE opFlag = LOG_TYPE.Unspecified;
+
 			try
 			{
 
-				if (m_DebugLogOptions.HasFlag(pExceptionType))
+				opFlag = GetOperationalFlag(pExceptionType);
+
+				if (m_DebugLogOptions.HasFlag(opFlag))
 				{
 
 					Int32 lngThreadID = Thread.CurrentThread.ManagedThreadId;
@@ -1896,10 +1900,14 @@ namespace Jeff.Jones.JLogger6
 		{
 			Boolean retVal = false;
 
+			LOG_TYPE opFlag = LOG_TYPE.Unspecified;
+
 			try
 			{
 
-				if (m_DebugLogOptions.HasFlag(pExceptionType))
+				opFlag = GetOperationalFlag(pExceptionType);
+
+				if (m_DebugLogOptions.HasFlag(opFlag))
 				{
 
 					Int32 lngThreadID = Thread.CurrentThread.ManagedThreadId;
@@ -2034,6 +2042,80 @@ namespace Jeff.Jones.JLogger6
 				throw;
 			}
 
+
+			return retVal;
+
+		}
+
+		private LOG_TYPE GetOperationalFlag(LOG_TYPE pExceptionType)
+		{
+
+			LOG_TYPE retVal = LOG_TYPE.Unspecified;
+
+			if (pExceptionType.HasFlag(LOG_TYPE.Informational))
+			{
+				retVal = LOG_TYPE.Informational;
+			}
+			else if (pExceptionType.HasFlag(LOG_TYPE.Cloud))
+			{
+				retVal = LOG_TYPE.Cloud;
+			}
+			else if (pExceptionType.HasFlag(LOG_TYPE.Database))
+			{
+				retVal = LOG_TYPE.Database;
+			}
+			else if (pExceptionType.HasFlag(LOG_TYPE.Error))
+			{
+				retVal = LOG_TYPE.Error;
+			}
+			else if (pExceptionType.HasFlag(LOG_TYPE.Fatal))
+			{
+				retVal = LOG_TYPE.Fatal;
+			}
+			else if (pExceptionType.HasFlag(LOG_TYPE.Flow))
+			{
+				retVal = LOG_TYPE.Flow;
+			}
+			else if (pExceptionType.HasFlag(LOG_TYPE.Management))
+			{
+				retVal = LOG_TYPE.Management;
+			}
+			else if (pExceptionType.HasFlag(LOG_TYPE.Network))
+			{
+				retVal = LOG_TYPE.Network;
+			}
+			else if (pExceptionType.HasFlag(LOG_TYPE.Performance))
+			{
+				retVal = LOG_TYPE.Performance;
+			}
+			else if (pExceptionType.HasFlag(LOG_TYPE.Service))
+			{
+				retVal = LOG_TYPE.Service;
+			}
+			else if (pExceptionType.HasFlag(LOG_TYPE.Startup))
+			{
+				retVal = LOG_TYPE.Startup;
+			}
+			else if (pExceptionType.HasFlag(LOG_TYPE.System))
+			{
+				retVal = LOG_TYPE.System;
+			}
+			else if (pExceptionType.HasFlag(LOG_TYPE.Test))
+			{
+				retVal = LOG_TYPE.Test;
+			}
+			else if (pExceptionType.HasFlag(LOG_TYPE.Threat))
+			{
+				retVal = LOG_TYPE.Threat;
+			}
+			else if (pExceptionType.HasFlag(LOG_TYPE.Warning))
+			{
+				retVal = LOG_TYPE.Warning;
+			}
+			else
+			{
+				retVal = pExceptionType;
+			}
 
 			return retVal;
 

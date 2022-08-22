@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using Jeff.Jones.JHelpers6;
 
 namespace Jeff.Jones.JLogger6
@@ -297,6 +300,7 @@ namespace Jeff.Jones.JLogger6
 
 			try
 			{
+
 				sqlParams = new List<SqlParameter>();
 
 				//@ID bigint OUTPUT, 

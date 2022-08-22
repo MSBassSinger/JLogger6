@@ -51,7 +51,7 @@ namespace Jeff.Jones.JLogger6
 
 			m_lngType = lngType;
 
-			m_strType = lngType.ToString();
+			m_strType = lngType.ToString().Replace(",", "");
 
 			m_DetailMessage = pDetailMessage;
 
