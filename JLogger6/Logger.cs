@@ -2646,33 +2646,33 @@ namespace Jeff.Jones.JLogger6
 		/// <param name="formatter"></param>
 		public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
 		{
-			//((ILogger)Instance).Log(logLevel, eventId, state, exception, formatter);
+
 			LOG_TYPE logType = m_DebugLogOptions;
 
 			switch (logLevel)
 			{
 				case LogLevel.Critical:
-					logType = logType | LOG_TYPE.Fatal;
+					logType = logType & LOG_TYPE.Fatal;
 					break;
 
 				case LogLevel.Debug:
-					logType = logType | LOG_TYPE.System;
+					logType = logType & LOG_TYPE.System;
 					break;
 
 				case LogLevel.Error:
-					logType = logType | LOG_TYPE.Error;
+					logType = logType & LOG_TYPE.Error;
 					break;
 
 				case LogLevel.Information:
-					logType = logType | LOG_TYPE.Informational;
+					logType = logType & LOG_TYPE.Informational;
 					break;
 
 				case LogLevel.Warning:
-					logType = logType | LOG_TYPE.Warning;
+					logType = logType & LOG_TYPE.Warning;
 					break;
 
 				case LogLevel.Trace:
-					logType = logType | LOG_TYPE.Flow;
+					logType = logType & LOG_TYPE.Flow;
 					break;
 
 				default:
