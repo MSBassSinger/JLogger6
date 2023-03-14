@@ -4,6 +4,8 @@ using Jeff.Jones.JHelpers6;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Text.Json;
+using System.IO;
 
 namespace JLogger6Test
 {
@@ -45,6 +47,16 @@ namespace JLogger6Test
 
 			Assert.IsTrue(response, "Failed to start the log");
 
+			//DebugLogItem dbgItem = new DebugLogItem();
+
+			//JsonSerializerOptions options = new JsonSerializerOptions();
+			//options.NumberHandling = System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString;
+			//options.PropertyNameCaseInsensitive = true;
+			//options.WriteIndented = true;
+
+			//String itemJson = JsonSerializer.Serialize<DebugLogItem>(dbgItem, options);
+
+			//File.WriteAllText($"{filePath}DebugLogItem.json", itemJson);
 
 		}
 

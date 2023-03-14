@@ -325,6 +325,57 @@
             Only used by the log writer during initial startup
             </summary>
         </member>
+        <member name="T:Jeff.Jones.JLogger6.LOG_DESTINATION_Enum">
+            <summary>
+            Where should the logger send log entries?
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "T:Jeff.Jones.JLogger6.LogLevelBitset" -->
+        <member name="F:Jeff.Jones.JLogger6.LogLevelBitset.None">
+            <summary>
+                Not used for writing log messages. Specifies that a logging category should not
+                write any messages.
+            </summary>
+        </member>
+        <member name="F:Jeff.Jones.JLogger6.LogLevelBitset.Trace">
+            <summary>
+                Logs that contain the most detailed messages. These messages may contain sensitive
+                application data. These messages are disabled by default and should never be
+                enabled in a production environment.
+            </summary>
+        </member>
+        <member name="F:Jeff.Jones.JLogger6.LogLevelBitset.Debug">
+            <summary>
+                Logs that are used for interactive investigation during development. These logs
+                should primarily contain information useful for debugging and have no long-term
+                value.
+            </summary>
+        </member>
+        <member name="F:Jeff.Jones.JLogger6.LogLevelBitset.Information">
+            <summary>
+                Logs that track the general flow of the application. These logs should have long-term
+                value.
+            </summary>
+        </member>
+        <member name="F:Jeff.Jones.JLogger6.LogLevelBitset.Warning">
+            <summary>
+                Logs that highlight an abnormal or unexpected event in the application flow,
+                but do not otherwise cause the application execution to stop.
+            </summary>
+        </member>
+        <member name="F:Jeff.Jones.JLogger6.LogLevelBitset.Error">
+            <summary>
+                Logs that highlight when the current flow of execution is stopped due to a failure.
+                These should indicate a failure in the current activity, not an application-wide
+                failure.
+            </summary>
+        </member>
+        <member name="F:Jeff.Jones.JLogger6.LogLevelBitset.Critical">
+            <summary>
+                Logs that describe an unrecoverable application or system crash, or a catastrophic
+                failure that requires immediate attention.
+            </summary>
+        </member>
         <member name="T:Jeff.Jones.JLogger6.Logger">
             <summary>
             Implementation for Logger used in production.
@@ -341,6 +392,7 @@
             Default log settings
             </summary>
         </member>
+        <!-- Badly formed XML comment ignored for member "F:Jeff.Jones.JLogger6.Logger.DEFAULT_ILOGGER_LOG_OPTIONS" -->
         <member name="F:Jeff.Jones.JLogger6.Logger.DEFAULT_LOG_RETENTION">
             <summary>
             By default, how long we retain old debug log files.
@@ -434,6 +486,11 @@
             </summary>
         </member>
         <member name="P:Jeff.Jones.JLogger6.Logger.DebugLogOptions">
+            <summary>
+            The debug flags that are active during the lifetime of the Logger instance
+            </summary>
+        </member>
+        <member name="P:Jeff.Jones.JLogger6.Logger.ILoggerOptions">
             <summary>
             The debug flags that are active during the lifetime of the Logger instance
             </summary>
@@ -532,6 +589,11 @@
             The file share name which houses remote directories and remote files.
             </summary>
         </member>
+        <member name="P:Jeff.Jones.JLogger6.Logger.AzureStorageQueueName">
+            <summary>
+            The Azure Storage Queue name to which LogItem instances are sent.
+            </summary>
+        </member>
         <member name="P:Jeff.Jones.JLogger6.Logger.AzureStorageDirectory">
             <summary>
             The directory name where the remote file(s) are kept.
@@ -581,6 +643,16 @@
             <param name="azureStorageFileShareName">The URL provided on the fileshare properties page</param>
             <param name="azureStorageDirectory">The storage directory name</param>
             <param name="useAzureFileStorage">True to turn on the use of the Azure file storage matching the configuration.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Jeff.Jones.JLogger6.Logger.SetAzureStorageQueueConfiguration(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="azureStorageResourceID"></param>
+            <param name="azureStorageQueueName"></param>
+            <param name="azureStorageDirectory"></param>
+            <param name="useAzureStorageQueueConfiguration"></param>
             <returns></returns>
         </member>
         <member name="M:Jeff.Jones.JLogger6.Logger.SetLogData(System.String,System.String,System.Int32,Jeff.Jones.JLogger6.LOG_TYPE,System.String)">
@@ -656,6 +728,13 @@
             <param name="secondaryMessage">Optional second message</param>
             <returns>True if written to log queue, false if not.</returns>
         </member>
+        <member name="M:Jeff.Jones.JLogger6.Logger.GetOperationalFlag(Jeff.Jones.JLogger6.LOG_TYPE)">
+            <summary>
+            
+            </summary>
+            <param name="pExceptionType"></param>
+            <returns></returns>
+        </member>
         <member name="P:Jeff.Jones.JLogger6.Logger.IsDisposing">
             <summary>
             Tells the caller if this instance is already being disposed.
@@ -700,6 +779,33 @@
             </summary>
             <param name="logLevel"></param>
             <returns></returns>
+        </member>
+        <member name="M:Jeff.Jones.JLogger6.Logger.ConvertILoggerBitsetToLogLevels(Jeff.Jones.JLogger6.LogLevelBitset)">
+            <summary>
+            Takes a LogLevelBitset value and converts it back to an array 
+            of LogLevel values.
+            </summary>
+            <param name="logLevelBitset">The ILogger bitset you want converted.</param>
+            <returns>LogLevel[] array.</returns>
+        </member>
+        <member name="M:Jeff.Jones.JLogger6.Logger.ConvertILoggerBitsetToLogLevel(Jeff.Jones.JLogger6.LogLevelBitset)">
+            <summary>
+            Takes a LogLevelBitset value and converts it to a LOG_TYPE bitset.
+            </summary>
+            <param name="logLevelBitset">The ILogger bitset you want converted.</param>
+            <returns>LogLevel bitset.</returns>
+        </member>
+        <member name="M:Jeff.Jones.JLogger6.Logger.ConvertLogLevelsToILoggerBitset(Jeff.Jones.JLogger6.LOG_TYPE)">
+            <summary>
+            This static method takes an array of the LogLevel enum values the app should support 
+            and converts them to a bitset that determines if a log entry is called (thus reducing the 
+            overhead of a function call that is unwanted).
+            
+            The use of a bitset makes the decision to call a log method very low cost, as a bitset comparison
+            uses much less processing, with better speed, than any other way to compare a non-flags enum in an array of values.
+            </summary>
+            <param name="logLevel">LOG_TYPE bitset</param>
+            <returns>A LogLevelBitset bitset matching the array values</returns>
         </member>
         <member name="M:Jeff.Jones.JLogger6.Logger.BeginScope``1(``0)">
             <summary>

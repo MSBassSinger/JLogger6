@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
+using System.Threading;
 
 namespace Jeff.Jones.JLogger6
 {
@@ -8,19 +10,36 @@ namespace Jeff.Jones.JLogger6
 	/// This class represents a single debug log entry.  These are used
 	/// as values in the debug log queue (m_dctLogQueue)
 	/// </summary>
-	internal class DebugLogItem
+	[Serializable()]
+	public class DebugLogItem
 	{
-		private LOG_TYPE m_lngType;
-		private DateTime m_dtmLogDateTime;
-		private String m_strType;
-		private String m_strLogMessage;
-		private String m_DetailMessage;
-		private String m_ModuleName;
-		private String m_MethodName;
-		private Int32 m_LineNumber;
-		private Int32 m_ThreadID;
-		private String m_ExceptionData;
-		private String m_StackData;
+
+		public DebugLogItem()
+		{
+			this.LogDateTime = default;
+
+			this.Type = LOG_TYPE.Unspecified;
+
+			this.TypeDescription = this.Type.ToString().Replace(",", "");
+
+			this.DetailMessage = "";
+
+			this.Message = "";
+
+			this.ModuleName = "";
+
+			this.MethodName = "";
+
+			this.LineNumber = 0;
+
+			this.ThreadID = 0;
+
+			this.ExceptionData = "";
+
+			this.StackData = "";
+
+		}
+
 
 		/// <summary>
 		/// Constructor to populate the item
@@ -47,27 +66,27 @@ namespace Jeff.Jones.JLogger6
 							Int32 threadID)
 		{
 
-			m_dtmLogDateTime = dtmLogDateTime;
+			this.LogDateTime = dtmLogDateTime;
 
-			m_lngType = lngType;
+			this.Type = lngType;
 
-			m_strType = lngType.ToString().Replace(",", "");
+			this.TypeDescription = lngType.ToString().Replace(",", "");
 
-			m_DetailMessage = pDetailMessage;
+			this.DetailMessage = pDetailMessage;
 
-			m_strLogMessage = strLogMessage;
+			this.Message = strLogMessage;
 
-			m_ModuleName = moduleName;
+			this.ModuleName = moduleName;
 
-			m_MethodName = methodName;
+			this.MethodName = methodName;
 
-			m_LineNumber = lineNumber;
+			this.LineNumber = lineNumber;
 
-			m_ThreadID = threadID;
+			this.ThreadID = threadID;
 
-			m_ExceptionData = pExceptionData;
+			this.ExceptionData = pExceptionData;
 
-			m_StackData = pStackData;
+			this.StackData = pStackData;
 
 		}  // END public DebugLogItem(...)
 
@@ -76,10 +95,7 @@ namespace Jeff.Jones.JLogger6
 		/// </summary>
 		public DateTime LogDateTime
 		{
-			get
-			{
-				return m_dtmLogDateTime;
-			}
+			get;set;
 		}
 
 		/// <summary>
@@ -87,10 +103,7 @@ namespace Jeff.Jones.JLogger6
 		/// </summary>
 		public LOG_TYPE Type
 		{
-			get
-			{
-				return m_lngType;
-			}
+			get; set; 
 		}
 
 		/// <summary>
@@ -98,10 +111,7 @@ namespace Jeff.Jones.JLogger6
 		/// </summary>
 		public String TypeDescription
 		{
-			get
-			{
-				return m_strType;
-			}
+			get; set;
 		}
 
 		/// <summary>
@@ -109,10 +119,7 @@ namespace Jeff.Jones.JLogger6
 		/// </summary>
 		public String Message
 		{
-			get
-			{
-				return m_strLogMessage;
-			}
+			get; set;
 		}
 
 		/// <summary>
@@ -120,10 +127,7 @@ namespace Jeff.Jones.JLogger6
 		/// </summary>
 		public String DetailMessage
 		{
-			get
-			{
-				return m_DetailMessage;
-			}
+			get; set;
 		}
 
 		/// <summary>
@@ -131,10 +135,7 @@ namespace Jeff.Jones.JLogger6
 		/// </summary>
 		public String ModuleName
 		{
-			get
-			{
-				return m_ModuleName;
-			}
+			get; set;
 		}
 
 		/// <summary>
@@ -142,10 +143,7 @@ namespace Jeff.Jones.JLogger6
 		/// </summary>
 		public String MethodName
 		{
-			get
-			{
-				return m_MethodName;
-			}
+			get; set;
 		}
 
 		/// <summary>
@@ -153,10 +151,7 @@ namespace Jeff.Jones.JLogger6
 		/// </summary>
 		public Int32 LineNumber
 		{
-			get
-			{
-				return m_LineNumber;
-			}
+			get; set;
 		}
 
 		/// <summary>
@@ -164,10 +159,7 @@ namespace Jeff.Jones.JLogger6
 		/// </summary>
 		public Int32 ThreadID
 		{
-			get
-			{
-				return m_ThreadID;
-			}
+			get; set;
 		}
 
 		/// <summary>
@@ -175,10 +167,7 @@ namespace Jeff.Jones.JLogger6
 		/// </summary>
 		public String ExceptionData
 		{
-			get
-			{
-				return m_ExceptionData;
-			}
+			get; set;
 		}
 
 		/// <summary>
@@ -186,10 +175,7 @@ namespace Jeff.Jones.JLogger6
 		/// </summary>
 		public String StackData
 		{
-			get
-			{
-				return m_StackData;
-			}
+			get; set;
 		}
 
 	}  // END public class DebugLogItem

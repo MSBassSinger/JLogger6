@@ -11,19 +11,19 @@
 		<Company>Jeff Jones</Company>
 		<PackageId>Jeff.Jones.JLogger6</PackageId>
 		<Title>JLogger6 - Logging singleton with email, database, and Azure options</Title>
-		<Description>A singleton logging component.  Simple to use, lots of flexibility.  Writes to a user-specified log and path, and optionally sends email.  Can also write logs to a SQL Server database.  Allows storing log files in Azure File Storage.</Description>
+		<Description>A singleton logging component.  Simple to use, lots of flexibility.  Writes to a user-specified log and path, and optionally sends email.  Can also write logs to a SQL Server database.  Allows storing log files in Azure File Storage.  PProvides an ILogger interface and a bitmask matching ILogger options.</Description>
 		<PackageReleaseNotes>All requests for support must be sent by email to:
     MSBassSinger@comcast.net
 The email MUST havd "JLogger6" in the Subject line
 You MUST provide details that include code snippets of where the failure occured, and exact failure or exception messages.
 Demo code can be found at https://github.com/MSBassSinger/LoggingDemo6</PackageReleaseNotes>
 		<PackageTags>log logging logger .NET singleton throughput multithreaded</PackageTags>
-		<Copyright>Copyright © 2022 Jeff Jones.  All rights Reserved.</Copyright>
+		<Copyright>Copyright © 2023 Jeff Jones.  All rights Reserved.</Copyright>
 		<ApplicationIcon>circlej.ico</ApplicationIcon>
 		<Win32Resource />
-		<AssemblyVersion>6.0.3</AssemblyVersion>
-		<FileVersion>6.0.3</FileVersion>
-		<Version>6.0.3</Version>
+		<AssemblyVersion>6.0.4</AssemblyVersion>
+		<FileVersion>6.0.4</FileVersion>
+		<Version>6.0.4</Version>
 		<PackageProjectUrl>https://github.com/MSBassSinger/JLogger6</PackageProjectUrl>
 		<PackageIcon>circlej.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>

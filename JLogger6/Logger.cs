@@ -138,6 +138,105 @@ namespace Jeff.Jones.JLogger6
 	}  // END public enum LOG_TYPE
 
 	/// <summary>
+	/// Where should the logger send log entries?
+	/// </summary>
+	public enum LOG_DESTINATION_Enum
+	{
+		Undefined = 0,
+		DiskFile = 1, 
+		AzureStorageFile = 2,
+		Database = 3,
+		AzureStorageQueue = 4,
+		AzureQueue = 5
+	}
+
+
+
+	/// <summary>
+	/// The Microsoft.Extensions.Logging.LogLevel enum is not a bitset enum ([Flags]).  So this is used to provide
+	/// the multi-level capability of logging that is lacking in LogLevel, but remains 100% compatible with it.
+	/// This bitset matches the LogLevel enum used by ILogger instances.
+	/// 
+	/// Using the static conversion methods in this class, the LogLevels in an array (denoting
+	/// what should be logged) are converted to a LogLevelBitset value (allowing low-cost comparisons before executing  
+	/// a logging method) to log  only those items wanted.  Since the value can be changed in real time, it allows changing  
+	/// the what levels of debugging to use at any time.  Fewer for normal operation, more for debugging production code
+	/// or during development and testing.
+	/// 
+	/// Example:
+	/// 
+	///	1. 	 if (m_Log != null) && ((m_LogLevels & LogLevelBitset.Error) == LogLevelBitset.Error))
+	///	2. 	 {
+	///	3. 		m_Log.LogError(exUnhandled, exUnhandled.GetFullExceptionMessage(true, false));
+	///	4.	 }
+	/// 
+	/// Line 1 makes sure whatever ILogger was passed in is instantiated before calling a logging method and 
+	///        if instantiated, performs a bit comparison to the desired logging levels, and 
+	///        if it matches, calls the ILogger method.  If the logging level
+	///        does not match, or the logger is not instantiated, then the method is never called, 
+	///        saving the overhead.
+	///        
+	/// This approach allows logging to be built in from the start at various levels, but only 
+	/// execute the log methods permitted by the current levels permitted.
+	/// 
+	/// </summary>
+	[Flags]
+	public enum LogLevelBitset
+	{
+
+		/// <summary>
+		///     Not used for writing log messages. Specifies that a logging category should not
+		///     write any messages.
+		/// </summary>
+		None = 0,
+
+
+		/// <summary>
+		///     Logs that contain the most detailed messages. These messages may contain sensitive
+		///     application data. These messages are disabled by default and should never be
+		///     enabled in a production environment.
+		/// </summary>
+		Trace = 1,
+
+
+		/// <summary>
+		///     Logs that are used for interactive investigation during development. These logs
+		///     should primarily contain information useful for debugging and have no long-term
+		///     value.
+		/// </summary>
+		Debug = 2,
+
+
+		/// <summary>
+		///     Logs that track the general flow of the application. These logs should have long-term
+		///     value.
+		/// </summary>
+		Information = 4,
+
+
+		/// <summary>
+		///     Logs that highlight an abnormal or unexpected event in the application flow,
+		///     but do not otherwise cause the application execution to stop.
+		/// </summary>
+		Warning = 8,
+
+		/// <summary>
+		///     Logs that highlight when the current flow of execution is stopped due to a failure.
+		///     These should indicate a failure in the current activity, not an application-wide
+		///     failure.
+		/// </summary>
+		Error = 16,
+
+		/// <summary>
+		///     Logs that describe an unrecoverable application or system crash, or a catastrophic
+		///     failure that requires immediate attention.
+		/// </summary>
+		Critical = 32
+	}
+
+
+
+	/// <summary>
 	/// Implementation for Logger used in production.
 	/// The class is sealed to prevent derived instances, which would defeat the purpose of a singleton.
 	/// </summary>
@@ -148,6 +247,8 @@ namespace Jeff.Jones.JLogger6
 		/// </summary>
 		private Int32 m_DaysToRetainLogs = DEFAULT_LOG_RETENTION;
 		private LOG_TYPE m_DebugLogOptions = DEFAULT_DEBUG_LOG_OPTIONS;
+		private LOG_DESTINATION_Enum m_LogDestination = LOG_DESTINATION_Enum.Undefined;
+		private LogLevelBitset m_LogLevelBitset = DEFAULT_ILOGGER_LOG_OPTIONS;
 		private String m_EmailServer = "";
 		private String m_EmailLogonName = "";
 		private String m_EmailPassword = "";
@@ -181,6 +282,9 @@ namespace Jeff.Jones.JLogger6
 		private String m_AzureStorageDirectory = "";
 		private String m_AzureRemoteFileName = "";
 		private Boolean m_UseAzureFileStorage = false;
+		private Boolean m_UseAzureStorageQueue = false;
+		private Boolean m_UseAzureQueue = false;
+		private String m_AzureStorageQueueName = "";
 
 
 
@@ -196,6 +300,12 @@ namespace Jeff.Jones.JLogger6
 															LOG_TYPE.System;
 
 
+		/// Default value for logging levels when used as ILogger.  Changed by what is passed in at the constructor.
+		/// </summary>
+		public const LogLevelBitset DEFAULT_ILOGGER_LOG_OPTIONS = LogLevelBitset.Debug |
+																 LogLevelBitset.Warning |
+																 LogLevelBitset.Critical |
+																 LogLevelBitset.Error;
 
 
 		/// <summary>
@@ -496,6 +606,23 @@ namespace Jeff.Jones.JLogger6
 			set
 			{
 				m_DebugLogOptions = value;
+				m_LogLevelBitset = ConvertLogLevelsToILoggerBitset(value);	
+			}
+		}
+
+		/// <summary>
+		/// The debug flags that are active during the lifetime of the Logger instance
+		/// </summary>
+		public LogLevelBitset ILoggerOptions
+		{
+			get
+			{
+				return m_LogLevelBitset;
+			}
+			set
+			{
+				m_LogLevelBitset = value;
+				m_DebugLogOptions = ConvertILoggerBitsetToLogLevel(value);
 			}
 		}
 
@@ -628,11 +755,25 @@ namespace Jeff.Jones.JLogger6
 		{
 			get
 			{
-				return m_DBEnabled;
+				if (m_LogDestination == LOG_DESTINATION_Enum.Database)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
 			}
 			set
 			{
-				m_DBEnabled = value;
+				if (value)
+				{
+					m_LogDestination = LOG_DESTINATION_Enum.Database;
+				}
+				else
+				{
+					m_LogDestination = LOG_DESTINATION_Enum.Undefined;
+				}
 			}
 		}
 
@@ -738,11 +879,25 @@ namespace Jeff.Jones.JLogger6
 		{
 			get
 			{
-				return m_UseAzureFileStorage;
+				if (m_LogDestination == LOG_DESTINATION_Enum.AzureStorageFile)
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
 			}
 			set
 			{
-				m_UseAzureFileStorage = value;
+				if (value)
+				{
+					m_LogDestination = LOG_DESTINATION_Enum.AzureStorageFile;
+				}
+				else
+				{
+					m_LogDestination = LOG_DESTINATION_Enum.Undefined;
+				}
 			}
 		}
 
@@ -773,6 +928,21 @@ namespace Jeff.Jones.JLogger6
 			set
 			{
 				m_AzureStorageFileShareName = value;
+			}
+		}
+
+		/// <summary>
+		/// The Azure Storage Queue name to which LogItem instances are sent.
+		/// </summary>
+		public String AzureStorageQueueName
+		{
+			get
+			{
+				return m_AzureStorageQueueName;
+			}
+			set
+			{
+				m_AzureStorageQueueName = value;
 			}
 		}
 
@@ -882,14 +1052,16 @@ namespace Jeff.Jones.JLogger6
 
 			try
 			{
-				this.DBEnabled = dbLogEnabled;
+				m_LogDestination = LOG_DESTINATION_Enum.Database;
 				this.DBServer = dbServer;
 				this.DBUseAuthentication = useWindowsAuthentication;
 				this.DBDatabase = dbName;
 				this.DBUserName = dbUserName;
 				this.DBPassword = dbPassword;
 				m_DaysToRetainLogs = daysToRetainLogs;
-				this.DebugLogOptions = DebugLogOptions;
+				this.DebugLogOptions = debugLogOptions;
+				this.ILoggerOptions = ConvertLogLevelsToILoggerBitset(debugLogOptions);
+				m_DBEnabled = dbLogEnabled;	
 
 				retVal = true;
 			}
@@ -930,8 +1102,12 @@ namespace Jeff.Jones.JLogger6
 			{
 				this.AzureStorageResourceID = azureStorageResourceID;
 				this.AzureStorageFileShareName = azureStorageFileShareName;
-				this.AzureStorageDirectory = azureStorageDirectory;	
-				this.UseAzureFileStorage = useAzureFileStorage;
+				this.AzureStorageDirectory = azureStorageDirectory;
+
+				if (useAzureFileStorage)
+				{
+					m_LogDestination = LOG_DESTINATION_Enum.AzureStorageFile;
+				}
 
 				retVal = true;
 			}
@@ -941,6 +1117,48 @@ namespace Jeff.Jones.JLogger6
 				exUnhandled.Data.Add("azureStorageFileShareName", azureStorageFileShareName ?? "NULL");
 				exUnhandled.Data.Add("azureStorageDirectory", azureStorageDirectory ?? "NULL");
 				exUnhandled.Data.Add("useAzureFileStorage", useAzureFileStorage.ToString());
+				throw;
+			}
+
+			return retVal;
+
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="azureStorageResourceID"></param>
+		/// <param name="azureStorageQueueName"></param>
+		/// <param name="azureStorageDirectory"></param>
+		/// <param name="useAzureStorageQueueConfiguration"></param>
+		/// <returns></returns>
+		public Boolean SetAzureStorageQueueConfiguration(String azureStorageResourceID,
+														 String azureStorageQueueName,
+														 String azureStorageDirectory,
+														 Boolean useAzureStorageQueueConfiguration)
+		{
+
+			Boolean retVal = false;
+
+			try
+			{
+				this.AzureStorageResourceID = azureStorageResourceID;
+				this.AzureStorageQueueName = azureStorageQueueName;
+				this.AzureStorageDirectory = azureStorageDirectory;
+				
+				if (useAzureStorageQueueConfiguration)
+				{
+					m_LogDestination = LOG_DESTINATION_Enum.AzureStorageQueue;
+				}
+
+				retVal = true;
+			}
+			catch (Exception exUnhandled)
+			{
+				exUnhandled.Data.Add("azureStorageResourceID", azureStorageResourceID ?? "NULL");
+				exUnhandled.Data.Add("azureStorageQueueName", azureStorageQueueName ?? "NULL");
+				exUnhandled.Data.Add("azureStorageDirectory", azureStorageDirectory ?? "NULL");
+				exUnhandled.Data.Add("useAzureStorageQueueConfiguration", useAzureStorageQueueConfiguration.ToString());
 				throw;
 			}
 
@@ -980,8 +1198,10 @@ namespace Jeff.Jones.JLogger6
 				}
 
 				m_DebugLogOptions = debugLogOptions;
+				this.ILoggerOptions = ConvertLogLevelsToILoggerBitset(debugLogOptions);
 
 				m_LogDataSet = true;
+				
 
 				if (emergencyLogPrefixName.Length == 0)
 				{
@@ -1010,9 +1230,6 @@ namespace Jeff.Jones.JLogger6
 			return retVal;
 
 		}
-
-
-
 
 
 		/// <summary>
@@ -1086,7 +1303,6 @@ namespace Jeff.Jones.JLogger6
 
 
 			StreamWriter DebugLogFileStream = null;
-
 
 			try
 			{
@@ -1519,8 +1735,11 @@ namespace Jeff.Jones.JLogger6
 				String callingMethodName = callingMethod.Name;
 				Int32 callingFileLineNumber = frame.GetFileLineNumber();
 
+				Int32 threadID = Thread.CurrentThread.ManagedThreadId;
+
 				if (m_DBEnabled)
 				{
+
 					DebugLogItem item = new DebugLogItem(logType,
 														 DateTime.Now,
 														 mainMessage,
@@ -1530,7 +1749,7 @@ namespace Jeff.Jones.JLogger6
 														 callingFileName,
 														 callingMethodName,
 														 callingFileLineNumber,
-														 Thread.CurrentThread.ManagedThreadId);
+														 threadID);
 
 					if (m_DAC != null)
 					{
@@ -1555,7 +1774,7 @@ namespace Jeff.Jones.JLogger6
 							logDateTime = DateTime.Now.ToString(FILE_FULL_DATE_FORMAT);
 						}
 
-						logfile.WriteLine($"{logDateTime}{LOG_FIELD_DELIMITER}{logType.ToString()}{LOG_FIELD_DELIMITER}{mainMessage}{LOG_FIELD_DELIMITER}{secondMessage}{LOG_FIELD_DELIMITER}N/A{LOG_FIELD_DELIMITER}N/A{LOG_FIELD_DELIMITER}{callingFileName}{LOG_FIELD_DELIMITER}{callingMethod.Name}{LOG_FIELD_DELIMITER}{callingFileLineNumber.ToString()}");
+						logfile.WriteLine($"{logDateTime}{LOG_FIELD_DELIMITER}{logType.ToString()}{LOG_FIELD_DELIMITER}{mainMessage}{LOG_FIELD_DELIMITER}{secondMessage}{LOG_FIELD_DELIMITER}N/A{LOG_FIELD_DELIMITER}N/A{LOG_FIELD_DELIMITER}{callingFileName}{LOG_FIELD_DELIMITER}{callingMethod.Name}{LOG_FIELD_DELIMITER}{callingFileLineNumber.ToString()}{LOG_FIELD_DELIMITER}{threadID}");
 						logfile.Flush();
 						logfile.Close();
 
@@ -2047,6 +2266,11 @@ namespace Jeff.Jones.JLogger6
 
 		}
 
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="pExceptionType"></param>
+		/// <returns></returns>
 		private LOG_TYPE GetOperationalFlag(LOG_TYPE pExceptionType)
 		{
 
@@ -2402,7 +2626,6 @@ namespace Jeff.Jones.JLogger6
 			try
 			{
 
-
 				WriteToLog(LOG_TYPE.Startup, "Default Debug Options Bitset Value: [" + m_DebugLogOptions.ToString("X") + "].", "");
 
 				WriteToLog(LOG_TYPE.Startup, String.Format(Properties.Resources.LOG_COMPUTERNAME, CommonHelpers.GetDNSName()), "");
@@ -2647,7 +2870,7 @@ namespace Jeff.Jones.JLogger6
 		public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
 		{
 
-			LOG_TYPE logType = m_DebugLogOptions;
+			LOG_TYPE logType = LOG_TYPE.Unspecified;
 
 			switch (logLevel)
 			{
@@ -2691,7 +2914,7 @@ namespace Jeff.Jones.JLogger6
 		{
 			Boolean retVal = false;
 
-			LOG_TYPE logType = m_DebugLogOptions;
+			LOG_TYPE logType = LOG_TYPE.Unspecified;
 
 			switch (logLevel)
 			{
@@ -2729,6 +2952,177 @@ namespace Jeff.Jones.JLogger6
 			return retVal;
 
 		}
+
+		/// <summary>
+		/// Takes a LogLevelBitset value and converts it back to an array 
+		/// of LogLevel values.
+		/// </summary>
+		/// <param name="logLevelBitset">The ILogger bitset you want converted.</param>
+		/// <returns>LogLevel[] array.</returns>
+		public static LogLevel[] ConvertILoggerBitsetToLogLevels(LogLevelBitset logLevelBitset)
+		{
+
+			LogLevel[] retVal;
+			List<LogLevel> tempList = new List<LogLevel>();
+
+			try
+			{
+
+				if ((logLevelBitset & LogLevelBitset.Critical) == LogLevelBitset.Critical)
+				{
+					tempList.Add(LogLevel.Critical);
+				}
+
+				if ((logLevelBitset & LogLevelBitset.Debug) == LogLevelBitset.Debug)
+				{
+					tempList.Add(LogLevel.Debug);
+				}
+
+				if ((logLevelBitset & LogLevelBitset.Information) == LogLevelBitset.Information)
+				{
+					tempList.Add(LogLevel.Information);
+				}
+
+				if ((logLevelBitset & LogLevelBitset.Warning) == LogLevelBitset.Warning)
+				{
+					tempList.Add(LogLevel.Warning);
+				}
+
+				if ((logLevelBitset & LogLevelBitset.Error) == LogLevelBitset.Error)
+				{
+					tempList.Add(LogLevel.Error);
+				}
+
+				if ((logLevelBitset & LogLevelBitset.Trace) == LogLevelBitset.Trace)
+				{
+					tempList.Add(LogLevel.Trace);
+				}
+
+				retVal = tempList.ToArray();
+
+			}
+			catch 
+			{
+				throw;
+
+			}
+
+			return retVal;
+		}
+
+		/// <summary>
+		/// Takes a LogLevelBitset value and converts it to a LOG_TYPE bitset.
+		/// </summary>
+		/// <param name="logLevelBitset">The ILogger bitset you want converted.</param>
+		/// <returns>LogLevel bitset.</returns>
+		public static LOG_TYPE ConvertILoggerBitsetToLogLevel(LogLevelBitset logLevelBitset)
+		{
+
+			LOG_TYPE retVal = LOG_TYPE.Unspecified;
+
+			try
+			{
+
+				if ((logLevelBitset & LogLevelBitset.Critical) == LogLevelBitset.Critical)
+				{
+					retVal |= LOG_TYPE.Fatal;
+				}
+
+				if ((logLevelBitset & LogLevelBitset.Debug) == LogLevelBitset.Debug)
+				{
+					retVal |= LOG_TYPE.Test;
+				}
+
+				if ((logLevelBitset & LogLevelBitset.Information) == LogLevelBitset.Information)
+				{
+					retVal |= LOG_TYPE.Informational;
+				}
+
+				if ((logLevelBitset & LogLevelBitset.Warning) == LogLevelBitset.Warning)
+				{
+					retVal |= LOG_TYPE.Warning;
+				}
+
+				if ((logLevelBitset & LogLevelBitset.Error) == LogLevelBitset.Error)
+				{
+					retVal |= LOG_TYPE.Error;
+				}
+
+				if ((logLevelBitset & LogLevelBitset.Trace) == LogLevelBitset.Trace)
+				{
+					retVal |= LOG_TYPE.Flow;
+				}
+
+			}
+			catch
+			{
+				throw;
+			}
+
+			return retVal;
+		}
+
+		/// <summary>
+		/// This static method takes an array of the LogLevel enum values the app should support 
+		/// and converts them to a bitset that determines if a log entry is called (thus reducing the 
+		/// overhead of a function call that is unwanted).
+		/// 
+		/// The use of a bitset makes the decision to call a log method very low cost, as a bitset comparison
+		/// uses much less processing, with better speed, than any other way to compare a non-flags enum in an array of values.
+		/// </summary>
+		/// <param name="logLevel">LOG_TYPE bitset</param>
+		/// <returns>A LogLevelBitset bitset matching the array values</returns>
+		public static LogLevelBitset ConvertLogLevelsToILoggerBitset(LOG_TYPE logLevel)
+		{
+
+			LogLevelBitset retVal = LogLevelBitset.None;
+
+			try
+			{
+
+				if ((logLevel & LOG_TYPE.Fatal) == LOG_TYPE.Fatal)
+				{
+					retVal |= LogLevelBitset.Critical;
+				}
+
+				if ((logLevel & LOG_TYPE.Test) == LOG_TYPE.Test)
+				{
+					retVal |= LogLevelBitset.Debug;
+				}
+
+				if ((logLevel & LOG_TYPE.Error) == LOG_TYPE.Error)
+				{
+					retVal |= LogLevelBitset.Error;
+				}
+
+				if ((logLevel & LOG_TYPE.Informational) == LOG_TYPE.Informational)
+				{
+					retVal |= LogLevelBitset.Information;
+				}
+
+				if ((logLevel & LOG_TYPE.Flow) == LOG_TYPE.Flow)
+				{
+					retVal |= LogLevelBitset.Trace;
+				}
+
+				if ((logLevel & LOG_TYPE.Warning) == LOG_TYPE.Warning)
+				{
+					retVal |= LogLevelBitset.Warning;
+				}
+
+			}
+			catch 
+			{
+				throw;
+
+			}
+
+			return retVal;
+		}
+
+
+
+
 
 		/// <summary>
 		/// 
